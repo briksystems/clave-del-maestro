@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La clave del maestro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=Literata:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: sobria, de aula; un reto serio.
+IDEA: un cuaderno de claves que se desbloquea nivel por nivel.
+PICTURE: el marcador de puntos y la fila de fragmentos del enunciado.
+COLOUR and TYPE: tinta azul profunda, blanco, bermellón de acento; Archivo + Literata.
+LAYOUT: una columna; un nivel abierto a la vez.
+*/
+:root{color-scheme:light dark;--bg:light-dark(#f4f5f7,#0f1622);--card:light-dark(#ffffff,#172233);--ink:light-dark(#14213a,#e8edf5);--soft:light-dark(#5a6680,#9fb0c8);--blue:light-dark(#1f3a6b,#8fb3ec);--acc:#d9472b;--ok:light-dark(#1f7a4d,#5fd39a);--line:light-dark(#dfe3ea,#26344a)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Archivo,system-ui,sans-serif;overflow-x:clip}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 60px}
+header{background:var(--blue);color:var(--card);padding:26px 18px 20px}
+header .in{max-width:720px;margin:0 auto;display:flex;gap:16px;align-items:flex-end;justify-content:space-between;flex-wrap:wrap}
+h1{font-size:clamp(32px,8vw,46px);line-height:1.05;margin:0 0 6px;font-weight:800;text-wrap:balance}
+header p{margin:0;opacity:.9}
+.score{font-size:40px;font-weight:800;line-height:1}.score small{display:block;font-size:13px;font-weight:600;opacity:.85}
+h2{font-size:22px;line-height:1.2;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin:16px 0}
+.key{background:var(--bg);border-left:4px solid var(--blue);border-radius:8px;padding:10px 12px;margin:10px 0}
+.key b{color:var(--blue)}
+.bank{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{border:1.5px dashed var(--line);border-radius:10px;padding:6px 10px;font-size:14px;color:var(--soft)}
+.chip.on{border-style:solid;border-color:var(--acc);color:var(--ink)}
+.lvl{border-left:5px solid var(--line)}.lvl.open{border-left-color:var(--acc)}.lvl.done{border-left-color:var(--ok)}.lvl.locked{opacity:.55}
+.tag{font-size:13px;color:var(--soft);margin-bottom:4px}
+.enigma{font-family:Literata,serif;font-size:17px}
+ol.ac li{margin:6px 0}
+label{display:block;font-weight:600;margin:12px 0 4px}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+input{font:inherit;font-size:16px;padding:11px 12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);flex:1 1 180px;min-height:44px}
+input:focus{outline:3px solid var(--blue);outline-offset:1px}
+button{font:inherit;font-weight:700;min-height:44px;padding:0 18px;border-radius:10px;border:0;background:var(--blue);color:var(--card);cursor:pointer}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+button.ghost{background:transparent;color:var(--blue);border:1.5px solid var(--blue);font-weight:600}
+.helps{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.hint{background:light-dark(#fff4ef,#2a1c18);border-radius:8px;padding:8px 12px;margin-top:8px;font-size:15px}
+.msg{font-size:14px;margin-top:6px;min-height:20px}.msg.bad{color:var(--acc)}
+.cipher{font-family:Literata,serif;font-size:22px;letter-spacing:.04em;margin:8px 0}
+.reveal{background:var(--bg);border-radius:12px;padding:14px;margin-top:12px}
+.reveal .fr{font-family:Literata,serif;font-size:18px;line-height:1.5}
+.task{font-weight:600;margin-top:10px}
+.pool button,.built button{display:block;width:100%;text-align:left;margin:8px 0;background:var(--bg);color:var(--ink);border:1.5px solid var(--line);font-family:Literata,serif;font-weight:400;padding:10px 12px;line-height:1.4}
+.built button{border-color:var(--acc)}
+.built button span{font-family:Archivo,sans-serif;font-weight:800;color:var(--acc);margin-right:6px}
+.donebox{background:var(--ok);color:var(--card);border-radius:12px;padding:16px;font-family:Literata,serif;font-size:18px;line-height:1.5;margin-top:12px}
+.small{font-size:13px;color:var(--soft)}
+@media(prefers-reduced-motion:no-preference){.lvl.open{animation:in .35s ease}@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body>
+<header><div class="in">
+<div><h1>La clave del maestro</h1><p>Pedagogía II · Clase de cierre</p></div>
+<div class="score" id="score">100<small>puntos</small></div>
+</div></header>
+
+<div class="wrap">
+<section class="card" id="login">
+<h2>Ingreso del grupo</h2>
+<label for="num">Número del grupo</label>
+<div class="row"><input id="num" inputmode="numeric" placeholder="Ejemplo: 3" autocomplete="off"></div>
+<label for="grupo">Nombre del grupo</label>
+<div class="row"><input id="grupo" placeholder="Escriban el nombre del grupo" autocomplete="off"></div>
+<div class="row" style="margin-top:10px"><button type="button" id="entrar">Entrar</button></div>
+<div class="msg bad" id="mlog"></div>
+</section>
+
+<section class="card">
+<h2>Cómo se juega</h2>
+<p>Son seis niveles y cada uno tiene un reto distinto. Cuando hay un versículo, el nivel trae su <b>llave</b>: la regla para convertir ese versículo en código. Las llaves cambian de un nivel a otro, así que léanlas con cuidado.</p>
+<p>Cada nivel resuelto entrega unas <b>claves</b>: palabras y citas que deben anotar en la hoja del grupo. Al final, con esas claves, completarán un enunciado que recoge todo el curso. Allí no se volverán a mostrar.</p>
+<p>Empiezan con <b>100 puntos</b>. Cada ayuda les quita 5 puntos, ya sea de la página o del profesor. Los intentos equivocados no restan puntos, pero quedan registrados.</p>
+<p>Necesitan una Biblia RVR 1960 y una hoja para el grupo.</p>
+</section>
+
+<section class="card"><h2>Niveles</h2><div class="bank" id="bank"></div></section>
+<div id="levels"></div>
+<section class="card lvl locked" id="final"></section>
+<p class="small">Para reiniciar este celular: <button class="ghost" id="reset" type="button">Reiniciar</button></p>
+</div>
+
+<script>
+{
+const N=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+const H=s=>{s=N(s);let x=2166136261;for(const c of s){x^=c.charCodeAt(0);x=Math.imul(x,16777619)>>>0}return x.toString(36)};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+
+const L=[
+{t:"Nivel 1 · Acróstico del curso",
+ steps:[{h:`<p>Respondan las siete definiciones con lo visto en el curso. La <b>primera letra</b> de cada respuesta, de arriba hacia abajo, forma la palabra clave.</p>
+<ol class="ac">
+<li>Actividad que usa el juego con una intención formativa (clase del taller).</li>
+<li>Wilkinson escribió siete ___ del aprendizaje.</li>
+<li>Sujeto activo que llega a la clase con historia, saberes, heridas y preguntas.</li>
+<li>El rol del docente en el constructivismo: no da todo hecho, acompaña la construcción.</li>
+<li>___ invertida: el alumno estudia antes y la clase se usa para practicar.</li>
+<li>El otro actor de la educación, el que enseña.</li>
+<li>La exposición ___: preparación, introducción, desarrollo y conclusión.</li>
+</ol>`,lab:"Palabra clave",a:"1h4zk8r"}],
+ hints:["Las respuestas 1, 3 y 6 son: lúdica, alumno y docente.","La palabra clave tiene 7 letras y empieza por LL."],
+ out:["LLAMADO","DOCENTE","ALUMNO"]},
+{t:"Nivel 2 · La Gran Comisión",
+ steps:[{h:`<div class="key"><b>Llave.</b> Cuenten a los evangelistas en orden: Mateo es 1, Marcos 2, Lucas 3 y Juan 4. Código = número del evangelista + capítulo + versículo, todo seguido. Ejemplo: Lucas 2:10 → 3210.</div>
+<p class="enigma">La Gran Comisión cierra el primero de los evangelios. Busquen el último versículo de ese evangelio: allí Jesús dice que no basta con enseñar, hay que enseñarles a hacer algo con lo enseñado.</p>`,lab:"Código",num:1,a:"1kpnc0k"},
+ {h:`<div class="key"><b>Llave.</b> Cada letra es un número según su lugar en el alfabeto español: A=1, B=2, C=3… N=14, Ñ=15, O=16… Z=27.</div>
+<p>Descifren el verbo de ese versículo que dice qué deben hacer los discípulos con lo que se les enseña:</p>
+<p class="cipher">7 · 22 · 1 · 19 · 4 · 5 · 14</p>`,lab:"Verbo",a:"12aqzrh"}],
+ hints:["El versículo es Mateo 28:20.","El verbo está en la frase «enseñándoles que ___ todas las cosas»."],
+ out:["GUARDAR","MATEO 28:20"]},
+{t:"Nivel 3 · ¿Quién soy?",
+ steps:[{h:`<p>Tres adivinanzas sobre cómo aprende el ser humano. Cada una describe una teoría o un modelo que vieron en el curso. Escriban su nombre.</p>
+<p class="enigma"><b>A.</b> Para mí, aprender es cambiar la conducta. Funciono con estímulo, respuesta y refuerzo: el maestro dirige y premia, y el alumno responde.</p>
+<p class="enigma"><b>B.</b> Para mí, aprender es construir significado a partir de la experiencia y de lo que ya se sabe. El maestro es mediador y el alumno, constructor.</p>`,lab:"Respuesta A",lab2:"Respuesta B",a:"1d2zbzj",a2:"hukyvp"},
+ {h:`<p class="enigma"><b>C.</b> Soy un modelo contemporáneo que diseña la enseñanza desde la necesidad real del alumno, en cinco pasos: empatizar, definir, idear, prototipar y evaluar. Mi nombre está en inglés y tiene dos palabras.</p>`,lab:"Respuesta C",a:"1pffyfr"}],
+ hints:["A y B terminan en «-ismo». Son teorías clásicas de la clase 2.","C es de la clase 3: «___ thinking»."],
+ out:["MÉTODO","PERSONA"],
+ note:"Recuerden la idea de la clase 3: el método debe servir a la persona, no la persona al método."},
+{t:"Nivel 4 · La meta",
+ steps:[{h:`<div class="key"><b>Llave.</b> Cuenten las cartas de Pablo en el orden de la Biblia, empezando por Romanos = 1. Código = número de la carta + capítulo + versículo.</div>
+<p class="enigma">Pablo enseñó dos años en la escuela de uno llamado Tiranno (lean Hechos 19:1 y 19:9-10 para saber en qué ciudad). Busquen la carta que escribió a la iglesia de esa ciudad. En el capítulo donde enumera a apóstoles, profetas, evangelistas, pastores y maestros, encuentren el versículo que dice hasta dónde debe llevar ese trabajo a los creyentes: «a la medida de la estatura…».</p>`,lab:"Código",num:1,a:"qlvgzg"},
+ {h:`<p>Ordenen las letras. La primera palabra es lo que la enseñanza cristiana <b>no</b> debe tener como meta; la segunda es lo que <b>sí</b>, según Wilkinson.</p>
+<p class="cipher">N O T E N I D O C</p><p class="cipher">T R A C A C E R</p>`,lab:"Primera palabra",lab2:"Segunda palabra",a:"1ojfq9s",a2:"t00scs"}],
+ hints:["La ciudad es Éfeso y la carta es Efesios, la quinta de Pablo.","El versículo es Efesios 4:13."],
+ out:["CONTENIDO","CARÁCTER","EFESIOS 4:13"]},
+{t:"Nivel 5 · Servir y responder",
+ steps:[{h:`<div class="key"><b>Llave A.</b> Juan es 4, porque es el cuarto evangelista. Código = 4 + capítulo + versículo.</div>
+<p class="enigma">La noche de la última cena, el Maestro se ciñó una toalla y lavó los pies de sus discípulos. En ese capítulo, busquen el versículo donde explica por qué lo hizo: dice qué les dio.</p>`,lab:"Código A",num:1,a:"101rmlp"},
+ {h:`<div class="key"><b>Llave B.</b> Las cartas que van después de Hebreos se cuentan desde Santiago = 1 (Santiago, 1 Pedro, 2 Pedro…). Código = número de la carta + capítulo + versículo.</div>
+<p class="enigma">La primera de esas cartas tiene un capítulo dedicado al poder de la lengua. Su primer versículo advierte a los que quieren ser maestros.</p>`,lab:"Código B",num:1,a:"xcxoo4"},
+ {h:`<p>Según ese versículo, ¿qué recibirán mayor los que enseñan? Es la última palabra del versículo.</p>`,lab:"Palabra",a:"11w63sw"}],
+ hints:["El código A es de Juan 13:15.","El código B es de Santiago 3:1."],
+ out:["RESPONDE","EJEMPLO","JUAN 13:15","SANTIAGO 3:1"],
+ note:"Juan 13:15 dice «ejemplo os he dado». Santiago 3:1 dice que el maestro responde con mayor rigor."},
+{t:"Nivel 6 · La cadena",
+ steps:[{h:`<div class="key"><b>Llave.</b> Las cartas pastorales se cuentan así: 1 Timoteo = 1, 2 Timoteo = 2, Tito = 3. Código = número de la carta + capítulo + versículo + el número de <b>eslabones</b> de la cadena de enseñanza.</div>
+<p class="enigma">En 2 Timoteo 2:2, Pablo describe una cadena de enseñanza: alguien enseñó, alguien escuchó, a otros se les encarga lo escuchado y esos enseñarán a otros más. Cuenten cuántos eslabones (personas o grupos) de esa cadena aparecen en el versículo.</p>`,lab:"Código",num:1,a:"6qufwz"},
+ {h:`<p>¿Cómo deben ser los hombres a quienes Timoteo encarga la enseñanza? Es un adjetivo del versículo.</p>`,lab:"Adjetivo",a:"141i9np"}],
+ hints:["Los eslabones son: Pablo («de mí»), Timoteo («has oído»), los hombres fieles y otros. Son 4.","El código es carta 2, capítulo 2, versículo 2 y 4 eslabones."],
+ out:["FIELES","OTROS","2 TIMOTEO 2:2"]}
+];
+
+/* Texto final: partes fijas y espacios. */
+const TX=["Educar es un ",0,". La pedagogía ocurre en el encuentro entre el ",1," y el ",2," alrededor de una verdad, y el ",3," debe servir a la ",4,", no al revés. La enseñanza se cumple cuando el alumno aprende a ",5," lo enseñado (",6,"). Su meta no es el ",7,", sino el ",8," de Cristo (",9,"). Quien enseña ",10," por lo que forma (",11,") y enseña con su ",12,", como el Maestro (",13,"). Por eso forma hombres ",14," que enseñen también a ",15," (",16,")."];
+const BL=["1h4zk8r","1bxy6v1","e4m3th","3n3f3r","1qp9cj","11756zh","1cxu925","1ojfq9s","t00scs","yvxcnp","xci5dl","mniw3","hs1te5","1nwd09t","141i9np","aga75y","z3lici"];
+const FULL="Educar es un llamado. La pedagogía ocurre en el encuentro entre el docente y el alumno alrededor de una verdad, y el método debe servir a la persona, no al revés. La enseñanza se cumple cuando el alumno aprende a guardar lo enseñado (Mateo 28:20). Su meta no es el contenido, sino el carácter de Cristo (Efesios 4:13). Quien enseña responde por lo que forma (Santiago 3:1) y enseña con su ejemplo, como el Maestro (Juan 13:15). Por eso forma hombres fieles que enseñen también a otros (2 Timoteo 2:2).";
+
+const KEY="clave-maestro-v4";
+const rid=()=>Math.random().toString(36).slice(2,8);
+const fresh=()=>({id:rid(),grupo:"",num:"",in:false,lv:L.map(()=>0),help:L.map(()=>0),prof:L.map(()=>0),err:L.map(()=>0),ferr:0,fin:false,bl:BL.map(()=>""),t0:Date.now(),t1:0});
+let S=fresh();
+try{const r=JSON.parse(localStorage.getItem(KEY));if(r&&Array.isArray(r.lv))S=r}catch(e){}
+const sum=a=>a.reduce((x,y)=>x+y,0);
+const pts=()=>Math.max(0,100-5*(sum(S.help)+sum(S.prof)));
+const doneL=i=>S.lv[i]>=L[i].steps.length;
+const cur=()=>{const i=L.findIndex((l,k)=>!doneL(k));return i<0?L.length:i};
+
+let db=null,busy=false,again=false;
+const payload=()=>({id:S.id,numero:S.num||"",grupo:S.grupo||"(sin nombre)",puntos:pts(),niveles:L.filter((l,i)=>doneL(i)).length,ayudasPagina:sum(S.help),ayudasProfesor:sum(S.prof),intentosFallidos:sum(S.err)+S.ferr,terminado:!!S.fin,minutos:Math.round(((S.t1||Date.now())-S.t0)/60000),actualizado:Date.now()});
+async function push(){if(!db)return;if(busy){again=true;return}busy=true;try{await db.collection("resultados").doc(S.id).set(payload())}catch(e){}busy=false;if(again){again=false;push()}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){};push()};
+
+const g=document.getElementById("grupo"),gn=document.getElementById("num");g.value=S.grupo||"";gn.value=S.num||"";
+document.getElementById("entrar").addEventListener("click",()=>{const n=gn.value.trim(),t=g.value.trim();if(!n||!t){document.getElementById("mlog").textContent="Escriban el número y el nombre del grupo.";return}S.num=n;S.grupo=t;S.in=true;S.t0=Date.now();save();render()});
+
+function lvlHTML(l,i,c){
+ const d=doneL(i),cls=d?"done":i===c?"open":"locked";
+ let h=`<section class="card lvl ${cls}"><div class="tag">${d?"Resuelto":i===c?"En curso":"Bloqueado"}</div><h2>${esc(l.t)}</h2>`;
+ if(i>c)return h+`<p class="small">Se abre al resolver el nivel anterior.</p></section>`;
+ if(d)return h+`<div class="reveal"><p class="small">Claves de este nivel. Anótenlas en la hoja: las necesitarán al final y no se volverán a mostrar allí.</p><div class="bank">${l.out.map(w=>`<span class="chip on">${esc(w)}</span>`).join("")}</div>${l.note?`<p class="small" style="margin-top:8px">${esc(l.note)}</p>`:""}</div></section>`;
+ const st=l.steps[S.lv[i]];
+ if(l.steps.length>1)h+=`<p class="small">Paso ${S.lv[i]+1} de ${l.steps.length}.</p>`;
+ h+=st.h;
+ h+=`<label for="x${i}">${st.lab}</label><input id="x${i}" autocomplete="off" ${st.num?'inputmode="numeric"':""}>`;
+ if(st.a2)h+=`<label for="y${i}">${st.lab2}</label><input id="y${i}" autocomplete="off">`;
+ h+=`<div class="row" style="margin-top:8px"><button type="button" data-a="go" data-i="${i}">Comprobar</button></div><div class="msg" id="m${i}"></div>`;
+ for(let k=0;k<S.help[i]&&k<l.hints.length;k++)h+=`<div class="hint"><b>Ayuda ${k+1}.</b> ${esc(l.hints[k])}</div>`;
+ h+=`<div class="helps">${S.help[i]<l.hints.length?`<button class="ghost" type="button" data-a="hint" data-i="${i}">Pedir ayuda (−5)</button>`:""}<button class="ghost" type="button" data-a="prof" data-i="${i}">Nos ayudó el profesor (−5)</button></div>`;
+ return h+`</section>`;
+}
+
+function finalHTML(c){
+ if(c<L.length)return `<div class="tag">Nivel final</div><h2>El enunciado</h2><p class="small">Se abre cuando terminen los seis niveles.</p>`;
+ if(S.fin)return `<div class="tag">Terminado</div><h2>El enunciado</h2><div class="donebox">${esc(FULL)}</div>${resumen()}`;
+ let h=`<div class="tag">Nivel final</div><h2>El enunciado</h2><p>Completen el texto con las claves que anotaron en cada nivel. Cada clave se usa una sola vez. Las citas bíblicas se escriben como las anotaron (por ejemplo: Mateo 28:20).</p><p class="fr" style="font-family:Literata,serif;line-height:2.1">`;
+ h+=TX.map(p=>typeof p==="number"?`<input class="bl" data-b="${p}" value="${esc(S.bl[p]||"")}" aria-label="Espacio ${p+1}" placeholder="${p+1}" style="display:inline-block;width:auto;min-width:120px;flex:none;padding:6px 8px;min-height:38px">`:esc(p)).join("");
+ h+=`</p><div class="row"><button type="button" data-a="check">Comprobar</button></div><div class="msg" id="mf"></div>`;
+ return h;
+}
+function resumen(){const p=payload();return `<div class="reveal"><p><b>Grupo ${esc(p.numero)} · ${esc(p.grupo)}</b></p><p>Puntos: <b>${p.puntos}</b> · Ayudas de la página: ${p.ayudasPagina} · Ayudas del profesor: ${p.ayudasProfesor} · Intentos fallidos: ${p.intentosFallidos} · Tiempo: ${p.minutos} min</p><p class="small">Muestren esta pantalla al profesor.</p></div>`}
+
+function render(){
+ if(location.hash==="#profesor")return;
+ const lg=document.getElementById("login");
+ if(!S.in){lg.style.display="";document.getElementById("levels").innerHTML='<section class="card lvl locked"><p class="small">Ingresen el número y el nombre del grupo para empezar.</p></section>';document.getElementById("bank").innerHTML="";document.getElementById("final").innerHTML="";return}
+ lg.style.display="none";
+ const c=cur();
+ document.getElementById("score").innerHTML=pts()+"<small>Grupo "+esc(S.num)+" · "+esc(S.grupo)+"</small>";
+ document.getElementById("bank").innerHTML=L.map((l,i)=>`<span class="chip ${doneL(i)?"on":""}">Nivel ${i+1}${doneL(i)?" ✓":""}</span>`).join("");
+ document.getElementById("levels").innerHTML=L.map((l,i)=>lvlHTML(l,i,c)).join("");
+ const f=document.getElementById("final");
+ f.className="card lvl "+(c<L.length?"locked":S.fin?"done":"open");
+ f.innerHTML=finalHTML(c);
+}
+
+document.addEventListener("input",e=>{const b=e.target.dataset&&e.target.dataset.b;if(b!==undefined){S.bl[+b]=e.target.value;try{localStorage.setItem(KEY,JSON.stringify(S))}catch(x){}}});
+document.addEventListener("click",e=>{
+ const b=e.target.closest("button[data-a]");if(!b)return;
+ const a=b.dataset.a,i=+b.dataset.i;
+ if(a==="go"){
+  const st=L[i].steps[S.lv[i]],m=document.getElementById("m"+i);
+  const ok1=H(document.getElementById("x"+i).value)===st.a,ok2=!st.a2||H(document.getElementById("y"+i).value)===st.a2;
+  if(ok1&&ok2){S.lv[i]++;save();render();const el=document.querySelectorAll(".lvl")[i];el&&el.scrollIntoView({behavior:"smooth"})}
+  else{S.err[i]++;save();m.className="msg bad";m.textContent=st.a2?((ok1?"La primera es correcta. ":"La primera no es. ")+(ok2?"La segunda es correcta.":"La segunda no es.")):"No es correcto. Revisen la llave y vuelvan a intentar."}
+ }
+ if(a==="hint"){S.help[i]++;save();render()}
+ if(a==="prof"){S.prof[i]++;save();render()}
+ if(a==="check"){
+  const m=document.getElementById("mf");
+  const ok=BL.map((h,k)=>H(S.bl[k]||"")===h),n=ok.filter(x=>x).length;
+  document.querySelectorAll("input.bl").forEach(inp=>{inp.style.borderColor=ok[+inp.dataset.b]?"var(--ok)":"var(--acc)"});
+  if(n===BL.length){S.fin=true;S.t1=Date.now();save();render()}
+  else{S.ferr++;save();m.className="msg bad";m.textContent=`${n} de ${BL.length} espacios están bien. Los que están en rojo hay que revisarlos.`}
+ }
+});
+let armed=false;
+document.getElementById("reset").addEventListener("click",e=>{if(armed){S=fresh();save();g.value="";gn.value="";armed=false;e.target.textContent="Reiniciar";render()}else{armed=true;e.target.textContent="Toque otra vez para confirmar"}});
+
+/* Panel del profesor */
+function teacher(){
+ document.querySelector(".wrap").innerHTML=`<section class="card"><h2>Resultados de los grupos</h2><p class="small" id="tst">Cargando…</p><div class="scroll"><table style="width:100%;border-collapse:collapse"><thead><tr><th>N.º</th><th align="left">Grupo</th><th>Puntos</th><th>Niveles</th><th>Ayudas pág.</th><th>Ayudas prof.</th><th>Fallos</th><th>Min</th><th>Fin</th></tr></thead><tbody id="tb"></tbody></table></div></section>`;
+ document.getElementById("score").style.display="none";
+ if(!db){document.getElementById("tst").textContent="No se pudo conectar el registro en la nube en este dispositivo. Pidan a cada grupo la pantalla final.";return}
+ const t=setTimeout(()=>{const s=document.getElementById("tst");if(s&&s.textContent==="Cargando…")s.textContent="Sin datos todavía."},10000);
+ db.collection("resultados").onSnapshot(snap=>{clearTimeout(t);
+  const rows=(snap.docs||snap||[]).map(d=>typeof d.data==="function"?d.data():(d.data||d)).filter(r=>r&&r.grupo);
+  rows.sort((a,b)=>(b.niveles-a.niveles)||(b.puntos-a.puntos));
+  document.getElementById("tst").textContent=rows.length?`${rows.length} grupos`:"Sin datos todavía.";
+  document.getElementById("tb").innerHTML=rows.map(r=>`<tr style="border-top:1px solid var(--line)"><td align="center">${esc(r.numero)}</td><td>${esc(r.grupo)}</td><td align="center"><b>${esc(r.puntos)}</b></td><td align="center">${esc(r.niveles)}/6</td><td align="center">${esc(r.ayudasPagina)}</td><td align="center">${esc(r.ayudasProfesor)}</td><td align="center">${esc(r.intentosFallidos)}</td><td align="center">${esc(r.minutos)}</td><td align="center">${r.terminado?"✓":""}</td></tr>`).join("");
+ },err=>{const s=document.getElementById("tst");if(s)s.textContent="No se pudo leer el registro."});
+}
+
+render();
+(async()=>{try{if(window.claude&&claude.use)db=await claude.use("db")}catch(e){db=null}
+ if(location.hash==="#profesor")teacher();else push();})();
+}
+</script>
+</body>
+</html>
